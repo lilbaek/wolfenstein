@@ -5,6 +5,7 @@ export class GameAssets {
     private wallTextureOffset: number;
     private gameMaps: ArrayBuffer;
     private mapHead: ArrayBuffer;
+
     public loadResources(): Promise<any> {
         const gamemapsPromise = this.getBinaryFile('GAMEMAPS.WL6');
         const mapheadPromise = this.getBinaryFile('MAPHEAD.WL6');
@@ -20,82 +21,79 @@ export class GameAssets {
 
     private getBinaryFile(url: string): Promise<ArrayBuffer> {
         return new Promise(resolve => {
-            let req = new XMLHttpRequest();
+            const req = new XMLHttpRequest();
             req.onload = () => resolve(req.response);
-            req.responseType = "arraybuffer";
-            req.open("GET", url);
+            req.responseType = 'arraybuffer';
+            req.open('GET', url);
             req.send();
         });
     }
 
     public loadLevel(level: number): Map {
-        let mapHeadView = new DataView(this.mapHead);
-        let offset = mapHeadView.getUint32(2 + 4 * level, true);
-        let mapHeader = new DataView(this.gameMaps, offset, 42);
-        let plane0View = new DataView(
+        const mapHeadView = new DataView(this.mapHead);
+        const offset = mapHeadView.getUint32(2 + 4 * level, true);
+        const mapHeader = new DataView(this.gameMaps, offset, 42);
+        const plane0View = new DataView(
             this.gameMaps,
             mapHeader.getUint32(0, true),
             mapHeader.getUint16(12, true),
         );
-        let plane0 = this.rlewDecode(this.carmackDecode(plane0View));
-        let plane1View = new DataView(
+        const plane0 = this.rlewDecode(this.carmackDecode(plane0View));
+        const plane1View = new DataView(
             this.gameMaps,
             mapHeader.getUint32(4, true),
             mapHeader.getUint16(14, true),
         );
-        let plane1 = this.rlewDecode(this.carmackDecode(plane1View));
-        let map = new Map(plane0, plane1, this.wallTextureOffset)
+        const plane1 = this.rlewDecode(this.carmackDecode(plane1View));
+        const map = new Map(plane0, plane1, this.wallTextureOffset);
         map.setup();
         return map;
     }
-
 
     /**
      * Decode a RLEW-encoded sequence of bytes
      */
     public rlewDecode(inView: DataView): DataView {
-    let mapHeadView = new DataView(this.mapHead);
-    let rlewTag = mapHeadView.getUint16(0, true);
-    let size = inView.getUint16(0, true);
-    let buffer = new ArrayBuffer(size);
-    let outView = new DataView(buffer);
-    let inOffset = 2;
-    let outOffset = 0;
-
-    while (inOffset < inView.byteLength) {
-        let w = inView.getUint16(inOffset, true);
-        inOffset += 2;
-        if (w === rlewTag) {
-            let n = inView.getUint16(inOffset, true);
-            let x = inView.getUint16(inOffset + 2, true);
-            inOffset += 4;
-            for (let i = 0; i < n; i++) {
-                outView.setUint16(outOffset, x, true);
+        const mapHeadView = new DataView(this.mapHead);
+        const rlewTag = mapHeadView.getUint16(0, true);
+        const size = inView.getUint16(0, true);
+        const buffer = new ArrayBuffer(size);
+        const outView = new DataView(buffer);
+        let inOffset = 2;
+        let outOffset = 0;
+        while (inOffset < inView.byteLength) {
+            const w = inView.getUint16(inOffset, true);
+            inOffset += 2;
+            if (w === rlewTag) {
+                const n = inView.getUint16(inOffset, true);
+                const x = inView.getUint16(inOffset + 2, true);
+                inOffset += 4;
+                for (let i = 0; i < n; i++) {
+                    outView.setUint16(outOffset, x, true);
+                    outOffset += 2;
+                }
+            } else {
+                outView.setUint16(outOffset, w, true);
                 outOffset += 2;
             }
-        } else {
-            outView.setUint16(outOffset, w, true);
-            outOffset += 2;
         }
+        return outView;
     }
-    return outView;
-}
-
 
     /**
      * Decode a Carmack-encoded sequence of bytes
      */
     public carmackDecode(inView: DataView): DataView {
-        let size = inView.getUint16(0, true);
-        let buffer = new ArrayBuffer(size);
-        let outView = new DataView(buffer);
+        const size = inView.getUint16(0, true);
+        const buffer = new ArrayBuffer(size);
+        const outView = new DataView(buffer);
         let inOffset = 2;
         let outOffset = 0;
         while (inOffset < inView.byteLength) {
-            let x = inView.getUint8(inOffset + 1);
+            const x = inView.getUint8(inOffset + 1);
             if (x === 0xA7 || x === 0xA8) {
                 // possibly a pointer
-                let n = inView.getUint8(inOffset);
+                const n = inView.getUint8(inOffset);
                 if (n === 0) {
                     // exception (not really a pointer)
                     outView.setUint8(outOffset, inView.getUint8(inOffset + 2));
@@ -104,7 +102,7 @@ export class GameAssets {
                     outOffset += 2;
                 } else if (x === 0xA7) {
                     // near pointer
-                    let offset = 2 * inView.getUint8(inOffset + 2);
+                    const offset = 2 * inView.getUint8(inOffset + 2);
                     for (let i = 0; i < n; i++) {
                         outView.setUint16(outOffset, outView.getUint16(outOffset - offset, true), true);
                         outOffset += 2;
@@ -112,12 +110,12 @@ export class GameAssets {
                     inOffset += 3;
                 } else {
                     // far pointer
-                    let offset = 2 * inView.getUint16(inOffset + 2, true);
+                    const offset = 2 * inView.getUint16(inOffset + 2, true);
                     for (let i = 0; i < n; i++) {
                         outView.setUint16(outOffset, outView.getUint16(offset + 2 * i, true), true);
                         outOffset += 2;
                     }
-                    inOffset += 4
+                    inOffset += 4;
                 }
             } else {
                 // not a pointer

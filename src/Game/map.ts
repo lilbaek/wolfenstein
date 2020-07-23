@@ -111,7 +111,7 @@ export class Map {
                 this.spawnStatic(x, y, tile);
                 break;
             case 98: //Secret
-
+                //gamestate.secrettotal++;
                 break;
             case 124:
                 //Dead guard
@@ -126,31 +126,126 @@ export class Map {
     }
 
     private spawnEnemiesAndGuards(x: number, y: number, tile: number): void {
-
+        //TODO: This needs to be changed to handle difficulty - see wl_game.cpp
+        /*
+                // enemy
+                if ((108 <= tile && tile < 116))
+                {
+                    things.push(new GuardEnemy(x, y, (tile - 108) % 4));
+                }
+                else if ((144 <= tile && tile < 152))
+                {
+                    things.push(new GuardEnemy(x, y, (tile - 144) % 4));
+                }
+                else if ((116 <= tile && tile < 124))
+                {
+                    things.push(new OfficerEnemy(x, y, (tile - 116) % 4));
+                }
+                else if ((152 <= tile && tile < 160))
+                {
+                    things.push(new OfficerEnemy(x, y, (tile - 152) % 4));
+                }
+                else if ((126 <= tile && tile < 134))
+                {
+                    things.push(new SSEnemy(x, y, (tile - 126) % 4));
+                }
+                else if ((162 <= tile && tile < 170))
+                {
+                    things.push(new SSEnemy(x, y, (tile - 162) % 4));
+                }
+                else if ((134 <= tile && tile < 142))
+                {
+                    things.push(new DogEnemy(x, y, (tile - 134) % 4));
+                }
+                else if ((170 <= tile && tile < 178))
+                {
+                    things.push(new DogEnemy(x, y, (tile - 170) % 4));
+                }
+                else if ((216 <= tile && tile < 224))
+                {
+                    things.push(new ZombieEnemy(x, y, (tile - 116) % 4));
+                }
+                else if ((234 <= tile && tile < 242))
+                {
+                    things.push(new ZombieEnemy(x, y, (tile - 144) % 4));
+                }
+                else if (tile == 160)
+                {
+                    things.push(new FakeHitlerEnemy(x, y));
+                }
+                else if (tile == 178)
+                {
+                    things.push(new HitlerEnemy(x, y));
+                }
+                else if (tile == 179)
+                {
+                    things.push(new FettgesichtEnemy(x, y));
+                }
+                else if (tile == 196)
+                {
+                    things.push(new SchabbsEnemy(x, y));
+                }
+                else if (tile == 197)
+                {
+                    things.push(new GretelEnemy(x, y));
+                }
+                else if (tile == 214)
+                {
+                    things.push(new HansEnemy(x, y));
+                }
+                else if (tile == 215)
+                {
+                    things.push(new OttoEnemy(x, y));
+                }
+                else if (224 <= tile && tile < 228)
+                {
+                    // Ghost
+                    var ghost = new Thing(x, y, 0);
+                    var spriteIndex = 288 + 2 * (tile - 224);
+                    ghost.startAnimation(new Animation([spriteIndex, spriteIndex + 1], true));
+                    things.push(ghost);
+                }*/
     }
 
     private spawnDeadGuard(i: number, tile: number): void {
-
+        //things.push(new Thing(x, y, 95));
     }
 
     private spawnStatic(x: number, y: number, tile: number): void {
-
+        /*
+        // props
+        var collectible = false;
+        if ([29, 43, 44, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56].indexOf(tile) >= 0) {
+            // collectible
+            collectible = true;
+            if (52 <= tile && tile <= 56) {
+                score.totalTreasures += 1;
+            }
+        }
+        if ([24, 25, 26, 28, 30, 31, 33, 34, 35, 36, 39, 40, 41, 45, 58, 59, 60, 62, 63, 68,
+            69].indexOf(tile) >= 0) {
+            // blocking prop
+            things.push(new Thing(x, y, tile - 21, collectible, false, true));
+            plane2[x][y] = true;
+        } else {
+            things.push(new Thing(x, y, tile - 21, collectible, false, false));
+        }*/
     }
 
     private spawnPlayer(x: number, y: number, m1: number): void {
         // player starting position
         this.player.x = x + .5;
         this.player.y = y + .5;
-        if (m1 == 19) {
+        if (m1 === 19) {
             this.player.dx = 0;
             this.player.dy = -1;
-        } else if (m1 == 20) {
+        } else if (m1 === 20) {
             this.player.dx = 1;
             this.player.dy = 0;
-        } else if (m1 == 21) {
+        } else if (m1 === 21) {
             this.player.dx = 0;
             this.player.dy = 1;
-        } else if (m1 == 22) {
+        } else if (m1 === 22) {
             this.player.dx = -1;
             this.player.dy = 0;
         }
@@ -172,7 +267,7 @@ export class Map {
             throw new Error('Too many Doors on level!');
         }
         this.tileMap[x][y] |= TileType.DOOR_TILE;
-        var door = new Door(x, y);
+        const door = new Door(x, y);
         this.doors.add(x.toFixed() + y.toFixed(), door);
         switch (tile) {
             case 90:
@@ -231,7 +326,7 @@ export class Map {
     private setupTileMap(): void {
         this.tileMap = [];
         for (let i = 0; i < 64; i++) {
-            let line = Array(64);
+            const line = Array(64);
             line.fill(0);
             this.tileMap.push(line);
         }

@@ -43,8 +43,8 @@ export class Player {
     }
 
     public move(length: number): void {
-        var x = this.x + this.dx * length;
-        var y = this.y + this.dy * length;
+        const x = this.x + this.dx * length;
+        const y = this.y + this.dy * length;
         if (this.canMoveTo(x, this.y)) {
             this.x = x;
         }
@@ -54,11 +54,11 @@ export class Player {
     }
 
     private canMoveTo(x: number, y: number): boolean {
-        var r = this.radius;
-        var fx = x % 1;
-        var xi = ~~x;
-        var fy = y % 1;
-        var yi = ~~y;
+        const r = this.radius;
+        const fx = x % 1;
+        const xi = ~~x;
+        const fy = y % 1;
+        const yi = ~~y;
         if (this.isSolidTile(xi, yi)) {
             return false;
         }
@@ -97,12 +97,12 @@ export class Player {
     private isSolidTile(x: number, y: number): boolean {
         //Check if we are allowed to pass trough a door
         if (this.map.doors.containsKey(x.toFixed() + y.toFixed())) {
-            var door = this.map.doors.get(x.toFixed() + y.toFixed());
+            const door = this.map.doors.get(x.toFixed() + y.toFixed());
             return !door.isOpen;
         }
         //Check impassable tile types
-        var tileType = this.map.tileMap[x][y];
-        return tileType == TileType.WALL_TILE || tileType == TileType.BLOCK_TILE || tileType == TileType.PUSHWALL_TILE;
+        const tileType = this.map.tileMap[x][y];
+        return tileType === TileType.WALL_TILE || tileType === TileType.BLOCK_TILE || tileType === TileType.PUSHWALL_TILE;
         //TODO: Check entities
     }
 }

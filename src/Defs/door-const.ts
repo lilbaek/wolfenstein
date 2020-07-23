@@ -30,4 +30,4 @@ export const DoorConsts = {
     TEX_PLATE       : (2 + 98), // Door Plate
     TEX_DELEV       : (4 + 98), // Elevator Door
     TEX_DLOCK        : (6 + 98)  // Locked Door
-}
+};

@@ -4,7 +4,7 @@ export class Dictionary<T> implements IDictionary<T> {
 
     constructor(init?: { key: string; value: T; }[]) {
         if (init) {
-            for (var x = 0; x < init.length; x++) {
+            for (let x = 0; x < init.length; x++) {
                 // @ts-ignore
                 this[init[x].key] = init[x].value;
                 this._keys.push(init[x].key);
@@ -13,14 +13,14 @@ export class Dictionary<T> implements IDictionary<T> {
         }
     }
 
-    public add(key: string, value: T) {
+    public add(key: string, value: T): void {
         // @ts-ignore
         this[key] = value;
         this._keys.push(key);
         this._values.push(value);
     }
 
-    public remove(key: string) {
+    public remove(key: string): void {
         const index = this._keys.indexOf(key, 0);
         this._keys.splice(index, 1);
         this._values.splice(index, 1);
@@ -41,7 +41,7 @@ export class Dictionary<T> implements IDictionary<T> {
         return this._values;
     }
 
-    public containsKey(key: string) {
+    public containsKey(key: string): boolean {
         // @ts-ignore
         return typeof this[key] !== 'undefined';
 

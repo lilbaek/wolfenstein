@@ -14,13 +14,13 @@ export const WolfConst = {
     TILESHIFT: 16,
     MINDIST: 0x5800,
     FLOATTILE: 65536.0,
-    TILE2POS: function (a: number) {
+    TILE2POS: function (a: number): number {
         return (((a) << WolfConst.TILESHIFT) + WolfConst.HALFTILE);
     },
-    POS2TILE: function (a: number) {
+    POS2TILE: function (a: number): number {
         return ((a) >> WolfConst.TILESHIFT);
     },
-    POS2TILEf: function (a: number) {
+    POS2TILEf: function (a: number): number {
         return ((a) / WolfConst.FLOATTILE);
     },
     ASTEP: 0.0078125,    // 1 FINE=x DEGREES
@@ -49,19 +49,19 @@ export const WolfConst = {
     ANG_360: 46080,        //(int)((float)360/ASTEP)
     ANGLES: 360,          // must be divisable by 4
     DEATHROTATE: 2,
-    FINE2RAD: function (a: number) {
+    FINE2RAD: function (a: number): number {
         return (a * Math.PI / WolfConst.ANG_180);
     },
-    RAD2FINE: function (a: number) {
+    RAD2FINE: function (a: number): number {
         return (a * WolfConst.ANG_180 / Math.PI);
     },
-    FINE2DEG: function (a: number) {
+    FINE2DEG: function (a: number): number {
         return (a / WolfConst.ANG_1) >> 0;
     },	// !@# don't lose precision bits
-    FINE2DEGf: function (a: number) {
+    FINE2DEGf: function (a: number): number {
         return (a / WolfConst.ANG_1);
     },
-    DEG2FINE: function (a: number) {
+    DEG2FINE: function (a: number): number {
         return (a * WolfConst.ANG_1);
     }
 };

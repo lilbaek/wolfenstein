@@ -41,16 +41,16 @@ export class WorldRenderer {
             let isPushwall = false;  // remember if wall is a pushwall to be able to draw it differently if needed
             // cast a ray for each screen column
             // current column position on the camera plane
-            let shift = this.fov * ((i << 1) - this.gameWidth) / this.gameWidth;
+            const shift = this.fov * ((i << 1) - this.gameWidth) / this.gameWidth;
             // direction of the ray
             let rdx = this.player.dx - shift * this.player.dy;
             let rdy = this.player.dy + shift * this.player.dx;
             // screen point coordinates in the direction of the ray
-            let sx = this.player.x + rdx;
-            let sy = this.player.y + rdy;
+            const sx = this.player.x + rdx;
+            const sy = this.player.y + rdy;
             // direction in which the ray moves along each axis
-            let stepx = rdx >= 0 ? 1 : -1;
-            let stepy = rdy >= 0 ? 1 : -1;
+            const stepx = rdx >= 0 ? 1 : -1;
+            const stepy = rdy >= 0 ? 1 : -1;
             // take absolute values of ray direction
             rdx = stepx * rdx;
             rdy = stepy * rdy;
@@ -89,20 +89,24 @@ export class WorldRenderer {
                         // pushwall
                         let timer: any;
                         timer = undefined;
+                        /*
+                        let timer = wallTimers.find(function (obj) {
+                            return obj.x === cx && obj.y === cy;
+                        });*/
                         if (timer !== undefined) {
                             wallShift = timer.t / 64;
                             if (timer.dx !== 0) {
                                 // wall moves horizontally
                                 if (rdx * rfy >= rdy * wallShift) {
                                     // ray hits wall
-                                    let dt = wallShift / rdx;
+                                    const dt = wallShift / rdx;
                                     t += dt;
                                     rfy -= dt * rdy;
                                     rfx -= wallShift;
                                 } else {
                                     // ray moves to next cell
                                     isPushwall = false;
-                                    let dt = rfy / rdy;
+                                    const dt = rfy / rdy;
                                     t += dt;
                                     rfy = 1;
                                     cy += stepy;
@@ -113,14 +117,14 @@ export class WorldRenderer {
                                 // wall moves vertically
                                 if (rdy * rfx >= rdx * wallShift) {
                                     // ray hits wall
-                                    let dt = wallShift / rdy;
+                                    const dt = wallShift / rdy;
                                     t += dt;
                                     rfx -= dt * rdx;
                                     rfy -= wallShift;
                                 } else {
                                     // ray moves to next cell
                                     isPushwall = false;
-                                    let dt = rfx / rdx;
+                                    const dt = rfx / rdx;
                                     t += dt;
                                     rfx = 1;
                                     cx += stepx;
@@ -145,8 +149,19 @@ export class WorldRenderer {
                 } else if (m0 <= 101) {
                     // hit a door
                     // check if door has an associated timer
-                    var door = this.map.doors.get(cx.toFixed() + cy.toFixed());
+                    const door = this.map.doors.get(cx.toFixed() + cy.toFixed());
                     let doorShift = 0;
+                    /*
+                    let timer = doorTimers.find(function (obj) {
+                        return obj.x === cx && obj.y === cy;
+                    });
+                    if (timer !== undefined) {
+                        if (timer.opening) {
+                            doorShift = timer.t / 64;
+                        } else {
+                            doorShift = 1 - timer.t / 64;
+                        }
+                    }*/
                     if (door.isOpen) {
                         doorShift = 1;
                     }
@@ -154,7 +169,7 @@ export class WorldRenderer {
                         // NS door
                         if (rfx >= .5 && (rfx - .5) * rdy < rfy * rdx) {
                             // ray hits the central door line
-                            let dt = (rfx - .5) / rdx;
+                            const dt = (rfx - .5) / rdx;
                             t += dt;
                             rfy -= dt * rdy;
                             rfx = .5;
@@ -181,7 +196,7 @@ export class WorldRenderer {
                         }
                         if (rfx * rdy >= rfy * rdx) {
                             // hit the side wall
-                            let dt = rfy / rdy;
+                            const dt = rfy / rdy;
                             t += dt;
                             rfx -= dt * rdx;
                             rfy = 1;
@@ -191,7 +206,7 @@ export class WorldRenderer {
                             break;
                         } else {
                             // pass through
-                            let dt = rfx / rdx;
+                            const dt = rfx / rdx;
                             t += dt;
                             rfy -= dt * rdy;
                             rfx = 1;
@@ -201,7 +216,7 @@ export class WorldRenderer {
                         // EW door
                         if (rfy >= .5 && (rfy - .5) * rdx < rfx * rdy) {
                             // ray hits the central door line
-                            let dt = (rfy - .5) / rdy;
+                            const dt = (rfy - .5) / rdy;
                             t += dt;
                             rfx -= dt * rdx;
                             rfy = .5;
@@ -228,7 +243,7 @@ export class WorldRenderer {
                         }
                         if (rfy * rdx >= rfx * rdy) {
                             // hit the side wall
-                            let dt = rfx / rdx;
+                            const dt = rfx / rdx;
                             t += dt;
                             rfy -= dt * rdy;
                             rfx = 1;
@@ -238,7 +253,7 @@ export class WorldRenderer {
                             break;
                         } else {
                             // pass through
-                            let dt = rfy / rdy;
+                            const dt = rfy / rdy;
                             t += dt;
                             rfx -= dt * rdx;
                             rfy = 1;
@@ -249,14 +264,14 @@ export class WorldRenderer {
                 // move to the next cell
                 if (rfx * rdy <= rfy * rdx) {
                     // move to next cell horizontally
-                    let dt = rfx / rdx;
+                    const dt = rfx / rdx;
                     t += dt;
                     rfx = 1;
                     cx += stepx;
                     rfy -= dt * rdy;
                 } else {
                     // move to next cell vertically
-                    let dt = rfy / rdy;
+                    const dt = rfy / rdy;
                     t += dt;
                     rfy = 1;
                     cy += stepy;
@@ -266,18 +281,30 @@ export class WorldRenderer {
             // compute ray location
             rx = stepx > 0 ? cx + 1 - rfx : cx + rfx;
             ry = stepy > 0 ? cy + 1 - rfy : cy + rfy;
-            let h = this.wallHeight / (2 * t); // height of the line representing the wall on the current column
-            let zIndex = [];
+            const h = this.wallHeight / (2 * t); // height of the line representing the wall on the current column
+            const zIndex = [];
             zIndex[i] = t;
             let yi = ~~(this.gameHeight / 2 - h);
             let yf = (this.gameHeight / 2 - h) % 1;
-            let stepi = ~~(h / 32);
-            let stepf = (h / 32) % 1;
-            let texelOffset = this.map.wallTextureOffset + 4096 * textureIndex + 64 * ~~(64 * tx);
+            const stepi = ~~(h / 32);
+            const stepf = (h / 32) % 1;
+            const texelOffset = this.map.wallTextureOffset + 4096 * textureIndex + 64 * ~~(64 * tx);
+            // draw ceiling and floor
+            // if (surfaceTexturesOn) {
+            //     for (let j = 0; j < y; j++) {
+            //         let d = wallHeight / (this.gameHeight - 2 * j);
+            //         let fx = sx + (rx - sx) * (d - 1) / (t - 1);
+            //         let fy = sy + (ry - sy) * (d - 1) / (t - 1);
+            //         drawPixel(i, j, getSurfaceTexel(fx % 1, fy % 1, 1));
+            //         drawPixel(i, this.gameHeight - j, getSurfaceTexel(fx % 1, fy % 1, 0));
+            //     }
+            // } else {
             for (let j = 0; j <= yi; j++) {
                 data.setUint32((this.gameWidth * j + i) << 2, palette[29], true);
                 data.setUint32((this.gameWidth * (this.gameHeight - 1 - j) + i) << 2, palette[25], true);
             }
+            // }
+            // draw the wall
             for (let j = texelOffset; j < texelOffset + 64; j++) {
                 let col;
                 col = palette[this.gameAssets.wsMap.getUint8(j)];
