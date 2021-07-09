@@ -12,3 +12,4 @@ Hot-reload is enabled.
 Only basic rendering is done. Navigate using the arrow keys.
 
 # Demo
+See: https://lilbaek.github.io/wolfenstein/
