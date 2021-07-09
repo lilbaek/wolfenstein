@@ -2,7 +2,8 @@
   "name": "wolfenstein",
   "version": "1.0.0",
   "scripts": {
-    "start": "webpack-dev-server --progress --open --config webpack.dev.js"
+    "start": "webpack-dev-server --progress --open --config webpack.dev.js",
+    "build": "webpack --config webpack.prod.js"
   },
   "dependencies": {
     "tslint": "^6.1.2"
