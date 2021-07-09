@@ -1,7 +1,7 @@
 import {DoorType} from '../Defs/door-type';
 import {Player} from '../Game/player';
 
-export class Door implements IEntity {
+export class Door {
     public x: number;
     public y: number;
     public isOpen: boolean;
