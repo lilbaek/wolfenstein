@@ -12,28 +12,13 @@ export class WorldRenderer {
     private fov = 1;
     private wallHeight: number;
 
-    constructor(gameAssets: GameAssets, gameWidth: number, gameHeight: number) {
+    constructor(gameAssets: GameAssets, map: Map, gameWidth: number, gameHeight: number) {
         this.gameAssets = gameAssets;
+        this.map = map;
         this.gameWidth = gameWidth;
         this.gameHeight = gameHeight;
-        this.map = gameAssets.loadLevel(0);
-        this.player = this.map.player;
         this.wallHeight = this.gameWidth / (2 * this.fov);
-    }
-
-    public update(keys: any): void {
-        if (keys['ArrowRight']) {
-            this.player.turn(this.player.speedA);
-        }
-        if (keys['ArrowLeft']) {
-            this.player.turn(-this.player.speedA);
-        }
-        if (keys['ArrowUp']) {
-            this.player.move(this.player.speed);
-        }
-        if (keys['ArrowDown']) {
-            this.player.move(-this.player.speed);
-        }
+        this.player = this.map.player;
     }
 
     public draw(data: DataView): void {
@@ -54,7 +39,7 @@ export class WorldRenderer {
             // take absolute values of ray direction
             rdx = stepx * rdx;
             rdy = stepy * rdy;
-            // cell position of the ray on the map (starting from the this.player position)
+            // map position of the ray on the map (starting from the this.player position)
             let cx = ~~this.player.x;
             let cy = ~~this.player.y;
             // remaining fractional distance from the ray position to the next cell (0 < rfx, rfy <= 1)
@@ -148,20 +133,16 @@ export class WorldRenderer {
                     break;
                 } else if (m0 <= 101) {
                     // hit a door
-                    // check if door has an associated timer
                     const door = this.map.doors.get(cx.toFixed() + cy.toFixed());
                     let doorShift = 0;
-                    /*
-                    let timer = doorTimers.find(function (obj) {
-                        return obj.x === cx && obj.y === cy;
-                    });
-                    if (timer !== undefined) {
+                    const timer = door.getTimer();
+                    if (timer) {
                         if (timer.opening) {
                             doorShift = timer.t / 64;
                         } else {
                             doorShift = 1 - timer.t / 64;
                         }
-                    }*/
+                    }
                     if (door.isOpen) {
                         doorShift = 1;
                     }
@@ -289,22 +270,10 @@ export class WorldRenderer {
             const stepi = ~~(h / 32);
             const stepf = (h / 32) % 1;
             const texelOffset = this.map.wallTextureOffset + 4096 * textureIndex + 64 * ~~(64 * tx);
-            // draw ceiling and floor
-            // if (surfaceTexturesOn) {
-            //     for (let j = 0; j < y; j++) {
-            //         let d = wallHeight / (this.gameHeight - 2 * j);
-            //         let fx = sx + (rx - sx) * (d - 1) / (t - 1);
-            //         let fy = sy + (ry - sy) * (d - 1) / (t - 1);
-            //         drawPixel(i, j, getSurfaceTexel(fx % 1, fy % 1, 1));
-            //         drawPixel(i, this.gameHeight - j, getSurfaceTexel(fx % 1, fy % 1, 0));
-            //     }
-            // } else {
             for (let j = 0; j <= yi; j++) {
                 data.setUint32((this.gameWidth * j + i) << 2, palette[29], true);
                 data.setUint32((this.gameWidth * (this.gameHeight - 1 - j) + i) << 2, palette[25], true);
             }
-            // }
-            // draw the wall
             for (let j = texelOffset; j < texelOffset + 64; j++) {
                 let col;
                 col = palette[this.gameAssets.wsMap.getUint8(j)];

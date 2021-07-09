@@ -1,7 +1,10 @@
+import {Door} from '../Entities/door';
 import {GameAssets} from '../Game/game-assets';
-import {WorldRenderer} from './world-renderer';
+import {WorldRenderer} from '../Rendering/world-renderer';
+import {Map} from './map';
+import {Player} from './player';
 
-export class Renderer {
+export class Game {
     private gameWidth = 640;
     private gameHeight = 400;
     private context: CanvasRenderingContext2D;
@@ -10,6 +13,8 @@ export class Renderer {
     private canvas: HTMLCanvasElement;
     private gameAssets: GameAssets;
     private worldRenderer: WorldRenderer;
+    private player: Player;
+    private map: Map;
 
     constructor(canvas: HTMLCanvasElement, gameAssets: GameAssets) {
         this.canvas = canvas;
@@ -19,12 +24,18 @@ export class Renderer {
         this.context = this.canvas.getContext('2d', {alpha: false});
         this.imageData = new ImageData(this.gameWidth, this.gameHeight);
         this.pixels = new DataView(this.imageData.data.buffer);
-        this.worldRenderer = new WorldRenderer(gameAssets, this.gameWidth, this.gameHeight);
+    }
 
+    public initialize(): void {
+        this.map = this.gameAssets.loadLevel(0);
+        this.player = this.map.player;
+        this.worldRenderer = new WorldRenderer(this.gameAssets, this.map, this.gameWidth, this.gameHeight);
     }
 
     public update(keys: any): void {
-        this.worldRenderer.update(keys);
+        this.player.handleInput(keys);
+        this.map.handleInput(keys);
+        this.map.tick();
     }
 
     public draw(): void {

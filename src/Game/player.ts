@@ -42,6 +42,21 @@ export class Player {
         this.dx = dx;
     }
 
+    public getPositionInWorld(): { worldX: number, worldY: number, dx: number, dy: number } {
+        let worldX = ~~this.x;
+        let worldY = ~~this.y;
+        let dx = 0;
+        let dy = 0;
+        if (Math.abs(this.dx) >= Math.abs(this.dy)) {
+            dx = this.dx >= 0 ? 1 : -1;
+            worldX += dx;
+        } else {
+            dy = this.dy >= 0 ? 1 : -1;
+            worldY += dy;
+        }
+        return { worldX, worldY, dx, dy };
+    }
+
     public move(length: number): void {
         const x = this.x + this.dx * length;
         const y = this.y + this.dy * length;
@@ -62,7 +77,7 @@ export class Player {
         if (this.isSolidTile(xi, yi)) {
             return false;
         }
-//Check if we are getting too close to a wall/solid tile
+        //Check if we are getting too close to a wall/solid tile
         if (fx < r) {
             if (this.isSolidTile(xi - 1, yi)) {
                 return false;
@@ -104,5 +119,20 @@ export class Player {
         const tileType = this.map.tileMap[x][y];
         return tileType === TileType.WALL_TILE || tileType === TileType.BLOCK_TILE || tileType === TileType.PUSHWALL_TILE;
         //TODO: Check entities
+    }
+
+    public handleInput(keys: any): void {
+        if (keys['ArrowRight']) {
+            this.turn(this.speedA);
+        }
+        if (keys['ArrowLeft']) {
+            this.turn(-this.speedA);
+        }
+        if (keys['ArrowUp']) {
+            this.move(this.speed);
+        }
+        if (keys['ArrowDown']) {
+            this.move(-this.speed);
+        }
     }
 }

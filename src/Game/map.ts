@@ -267,7 +267,7 @@ export class Map {
             throw new Error('Too many Doors on level!');
         }
         this.tileMap[x][y] |= TileType.DOOR_TILE;
-        const door = new Door(x, y);
+        const door = new Door(x, y, this.player);
         this.doors.add(x.toFixed() + y.toFixed(), door);
         switch (tile) {
             case 90:
@@ -330,5 +330,17 @@ export class Map {
             line.fill(0);
             this.tileMap.push(line);
         }
+    }
+
+    public handleInput(keys: any): void {
+        this.doors.keys().forEach((key) => {
+            this.doors.get(key).update(keys);
+        });
+    }
+
+    public tick(): void {
+        this.doors.keys().forEach((key) => {
+            this.doors.get(key).tick();
+        });
     }
 }
