@@ -54,7 +54,12 @@ export class Player {
             dy = this.dy >= 0 ? 1 : -1;
             worldY += dy;
         }
-        return { worldX, worldY, dx, dy };
+        return {
+            worldX,
+            worldY,
+            dx,
+            dy
+        };
     }
 
     public move(length: number): void {
@@ -74,42 +79,42 @@ export class Player {
         const xi = ~~x;
         const fy = y % 1;
         const yi = ~~y;
-        if (this.isSolidTile(xi, yi)) {
+        if (this.canMoveInto(xi, yi)) {
             return false;
         }
-        //Check if we are getting too close to a wall/solid tile
+        //Check if we are getting too close to a wall/solid/entity
         if (fx < r) {
-            if (this.isSolidTile(xi - 1, yi)) {
+            if (this.canMoveInto(xi - 1, yi)) {
                 return false;
             }
-            if (fy < r && this.isSolidTile(xi - 1, yi - 1)) {
+            if (fy < r && this.canMoveInto(xi - 1, yi - 1)) {
                 return false;
             }
-            if (fy > 1 - r && this.isSolidTile(xi - 1, yi + 1)) {
+            if (fy > 1 - r && this.canMoveInto(xi - 1, yi + 1)) {
                 return false;
             }
         }
         if (fx > 1 - r) {
-            if (this.isSolidTile(xi + 1, yi)) {
+            if (this.canMoveInto(xi + 1, yi)) {
                 return false;
             }
-            if (fy < r && this.isSolidTile(xi + 1, yi - 1)) {
+            if (fy < r && this.canMoveInto(xi + 1, yi - 1)) {
                 return false;
             }
-            if (fy > 1 - r && this.isSolidTile(xi + 1, yi + 1)) {
+            if (fy > 1 - r && this.canMoveInto(xi + 1, yi + 1)) {
                 return false;
             }
         }
-        if (fy < r && this.isSolidTile(xi, yi - 1)) {
+        if (fy < r && this.canMoveInto(xi, yi - 1)) {
             return false;
         }
-        if (fy > 1 - r && this.isSolidTile(xi, yi + 1)) {
+        if (fy > 1 - r && this.canMoveInto(xi, yi + 1)) {
             return false;
         }
         return true;
     }
 
-    private isSolidTile(x: number, y: number): boolean {
+    private canMoveInto(x: number, y: number): boolean {
         //Check if we are allowed to pass trough a door
         if (this.map.doors.containsKey(x.toFixed() + y.toFixed())) {
             const door = this.map.doors.get(x.toFixed() + y.toFixed());
@@ -117,8 +122,15 @@ export class Player {
         }
         //Check impassable tile types
         const tileType = this.map.tileMap[x][y];
-        return tileType === TileType.WALL_TILE || tileType === TileType.BLOCK_TILE || tileType === TileType.PUSHWALL_TILE;
-        //TODO: Check entities
+        const blocking = tileType === TileType.WALL_TILE || tileType === TileType.BLOCK_TILE || tileType === TileType.PUSHWALL_TILE;
+        if (blocking) {
+            return true;
+        }
+        //Check entities
+        if (this.map.entityLocations[x][y] !== undefined) {
+            return true;
+        }
+        return false;
     }
 
     public handleInput(keys: any): void {

@@ -11,7 +11,10 @@ export class WorldRenderer {
     private player: Player;
     private fov = 1;
     private wallHeight: number;
-
+    /**
+     * Array containing distance of wall for each pixel column on screen
+     */
+    public zIndex: Array<number>;
     constructor(gameAssets: GameAssets, map: Map, gameWidth: number, gameHeight: number) {
         this.gameAssets = gameAssets;
         this.map = map;
@@ -19,6 +22,7 @@ export class WorldRenderer {
         this.gameHeight = gameHeight;
         this.wallHeight = this.gameWidth / (2 * this.fov);
         this.player = this.map.player;
+        this.zIndex = [];
     }
 
     public draw(data: DataView): void {
@@ -263,8 +267,7 @@ export class WorldRenderer {
             rx = stepx > 0 ? cx + 1 - rfx : cx + rfx;
             ry = stepy > 0 ? cy + 1 - rfy : cy + rfy;
             const h = this.wallHeight / (2 * t); // height of the line representing the wall on the current column
-            const zIndex = [];
-            zIndex[i] = t;
+            this.zIndex[i] = t;
             let yi = ~~(this.gameHeight / 2 - h);
             let yf = (this.gameHeight / 2 - h) % 1;
             const stepi = ~~(h / 32);
